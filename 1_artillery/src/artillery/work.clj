@@ -15,7 +15,12 @@
 ;;; It always returns PI / 2 (missile is launched straight up).
 ;;; You can either calculate answer or find it by trying and adjusting different angles.
 (defn plane-static-solution []
-  (* 0.5 Math/PI))
+  (+ (Math/acos (/ (* (- 500 0) 5)
+                   (Math/sqrt (+ (* (* (- 400 0)(- 400 0)) 100)
+                                 (* 100 (* (- 500 0) (- 500 0))))))) 
+     (Math/acos (/ (* (- 500 0) 10) 
+                   (Math/sqrt (+ (* (* (- 400 0)(- 400 0)) 100) 
+                                 (* 100 (* (- 500 0) (- 500 0)))))))))
 
 ;;; Here's a function that will show you animation with plane you launching missiles.
 ;;; You need to pass your solution (function name) to this function and run this file.
@@ -34,11 +39,16 @@
 ;;; trg-x trg-y - target's coordinates.
 ;;; Run and see how it launches missile now and then fix it to hit the plane.
 (defn plane-dynamic-solution [pl-x pl-y trg-x trg-y]
-  (Math/atan2 (- trg-y pl-y) (- trg-x pl-x)))
+ (+ (Math/acos (/ (* (- trg-y pl-y) 5)
+                   (Math/sqrt (+ (* (* (- pl-x trg-x)(- pl-x trg-x)) 100)
+                                 (* 100 (* (- trg-y pl-y) (- trg-y pl-y))))))) 
+     (Math/acos (/ (* (- trg-y pl-y) 10) 
+                   (Math/sqrt (+ (* (* (- pl-x trg-x)(- pl-x trg-x)) 100) 
+                                 (* 100 (* (- trg-y pl-y) (- trg-y pl-y)))))))))
 
 ;;; To run program uncomment - remove ';' symbol before '(plane-dynamic ...)'
 ;;; And also comment previous task - add ';' symbol before '(plane-static ...)'
-; (plane-dynamic plane-dynamic-solution)
+;(plane-dynamic plane-dynamic-solution)
 
 
 
@@ -55,15 +65,24 @@
 ;;; Now you don't have template function, so write one yourself.
 ;;; Hint: try to pass random angle at first e.g. 0.5 and see how it works.
 ;;; To run program uncomment it (and comment others) and pass your function to it.
-; (ufo-static YOUR_SOLUTION)
+(defn ufo-static-solution []
+  (Math/atan (/ (- 100 (Math/sqrt (- 10000 (* 0.1 (+ (* 200 300) (* 0.1 (* 500 500))))))) (* 0.1 500))))
+
+;(ufo-static ufo-static-solution)
 
 
 
 ;;; Same UFO, but now it appears at random position (same as plane-dynamic).
 ;;; Your position is also changing.
 ;;; You need to write function that takes 4 arguments: your position (x, y)  and UFO's position (x, y).
-; (ufo-dynamic YOUR_SOLUTION)
-ß ÌÀØÀ!!!!!
+(defn ufo-dynamic-solution [pl-x pl-y trg-x trg-y]
+  (
+    let [d (- 10000 (* 0.1 (+ (* 200 (- trg-y pl-y)) (* 0.1 (* (- trg-x pl-x) (- trg-y pl-y))))))]
+    (if(>= d 0) (Math/atan (/ (- 100 (Math/sqrt d)) (* 0.1 (- trg-x pl-x)))) (Math/atan (/ 100 (* 0.1 (- trg-x pl-x)))))))
+
+;(ufo-dynamic ufo-dynamic-solution)
+
+
 
 ;;; If you're still full of energy I propose you to add wind to simulation.
 ;;; Open core.clj file and try to figure out (it's not very easy) where missile speed is changed and try to add wind.
