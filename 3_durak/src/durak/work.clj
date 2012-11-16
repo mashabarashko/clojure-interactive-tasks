@@ -13,36 +13,6 @@
 ;;; Defend function is called  when your are a defender and it should select 1 card from your hand and put it on the table.
 ;;; If you return nil it means you can't (or don't want to) defend and you take all cards from the table.
 
-(defn higher? [{suit-a :suit rank-a :rank}
-               {suit-b :suit rank-b :rank}
-               tramp]
-  (if (= suit-a suit-b)
-    (> rank-a rank-b)
-    (= suit-a tramp)))
-
-(defn my-comp [x y tramp]
-( if(= (:suit x) tramp) 
-  (if (not= (:suit y) tramp) false
-    (if (< (:rank x) (:rank y)) true false))
-  (if (= (:suit y) tramp) true
-    (if (< (:rank x) (:rank y)) true false))
-  ))
-
-(def my-bot
-  {:attack
-  (fn [{:keys [table hand tramp]}]
-     ( if (empty? table)
-          (first (sort #(my-comp %1 %2 tramp) hand))
-          (first (filter #(if (= (:suit %) tramp) false true) (into [] (into #{} (filter #(if (= % nil) false true) (for [x1 hand x2 table]
-  (if (= (:rank x1) (:rank x2)) x1) )))))
-)))
-   :defend
-   (fn [{:keys [table hand tramp]}]
-     (first (filter #(higher? % (last table) tramp) (sort    #(my-comp %1 %2 tramp) hand))))})
-
-
-(run-game my-bot)
-
 ;;; Card is a map with 2 keys: rank and suit.
 ;;; Rank is a number from 6 to 14.
 ;;; 11 - Jack
