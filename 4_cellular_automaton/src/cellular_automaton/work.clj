@@ -40,14 +40,16 @@
 (defn in? [s elm]  
   (some #(= elm %) s)) 
 
-(defn update-cells [] (reset! cells (set (filter #(let
-       [v (vector [(- (first %) 1) (- (last %) 1)] [(- (first %) 1) (last %)] 
-       [(- (first %) 1) (+ (last %) 1)] [(first %) (- (last %) 1)]
-       [(first %) (+ (last %) 1)] [(+ (first %) 1) (- (last %) 1)] 
-       [(+ (first %) 1) (last %)] [(+ (first %) 1) (+ (last %) 1)])]
- (if (in? @cells %)
+(defn alive? [cell] (let
+       [v (vector [(- (first cell) 1) (- (last cell) 1)] [(- (first cell) 1) (last cell)] 
+       [(- (first cell) 1) (+ (last cell) 1)] [(first cell) (- (last cell) 1)]
+       [(first cell) (+ (last cell) 1)] [(+ (first cell) 1) (- (last cell) 1)] 
+       [(+ (first cell) 1) (last cell)] [(+ (first cell) 1) (+ (last cell) 1)])]
+ (if (in? @cells cell)
            (if (or (= (count (filter (partial in? @cells) v)) 2) (= (count (filter (partial in? @cells) v)) 3)) true false)
-           (if (= (count (filter (partial in? @cells) v)) 3) true false))) (for [x (range 25)
+           (if (= (count (filter (partial in? @cells) v)) 3) true false))))
+
+(defn update-cells [] (reset! cells (set (filter alive? (for [x (range 25)
       y (range 25)]
       [x y])))))
 
