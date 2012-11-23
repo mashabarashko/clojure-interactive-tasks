@@ -1,8 +1,3 @@
-(ns cellular-automaton.work
-  (:use quil.core))
-
-
-
 ;;; Your task is to implement cellular automaton.
 ;;; The most famous example of cellular automaton is Conway's Game of Life.
 ;;; Unlike previous tasks now you have to implement visualization and bots. So you need to implement everything :)
@@ -27,3 +22,51 @@
 
 
 ;;; Add ability to change cells' states by mouse click, to restart and pause simulation.
+
+(ns cellular-automaton.work
+  (:use quil.core))
+
+(def cell-size 20)
+
+(def cells (atom #{[1 0] [2 1] [2 2] [1 2] [0 2]}))
+
+(defn to-real-coords [cell]
+  (map #(* cell-size %) cell))
+
+(defn draw-cell [draw-fn cell]
+  (let [[real-x real-y] (to-real-coords cell)]
+    (draw-fn real-x real-y cell-size cell-size)))
+
+(defn in? [s elm]  
+  (some #(= elm %) s)) 
+
+(defn update-cells [] (reset! cells (set (filter #(let
+       [v (vector [(- (first %) 1) (- (last %) 1)] [(- (first %) 1) (last %)] 
+       [(- (first %) 1) (+ (last %) 1)] [(first %) (- (last %) 1)]
+       [(first %) (+ (last %) 1)] [(+ (first %) 1) (- (last %) 1)] 
+       [(+ (first %) 1) (last %)] [(+ (first %) 1) (+ (last %) 1)])]
+ (if (in? @cells %)
+           (if (or (= (count (filter (partial in? @cells) v)) 2) (= (count (filter (partial in? @cells) v)) 3)) true false)
+           (if (= (count (filter (partial in? @cells) v)) 3) true false))) (for [x (range 25)
+      y (range 25)]
+      [x y])))))
+
+(defn draw-cells [cells]
+  (fill 0 0 255)
+  (doseq [cell cells]
+    (draw-cell rect cell)))
+
+(defn draw []
+  (background 255)
+  (draw-cells @cells)
+  (update-cells))
+
+(defn setup []
+  (fill 255)
+  (frame-rate 2))
+
+(defsketch cellular-automaton
+  :title "Game of Life"
+  :setup setup
+  :draw draw
+  :size [500 500])
