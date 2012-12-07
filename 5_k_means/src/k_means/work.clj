@@ -11,12 +11,28 @@
 ;;; Input will be [[0 0] [9 9] [1 1] [10 10]] and output should be something like [[[0 0] [1 1]] [[9 9] [10 10]]].
 ;;; Note that you don't get k - number of clusters. You need to specify it somewhere in function.
 ;;; To test you solution use following tests:
+(defn distance [p1 p2] (Math/sqrt (+ (* (- (first p1) (first p2)) (- (first p1) (first p2)))
+                                 (* (- (second p1) (second p2)) (- (second p1) (second p2))))))
 
-; (run-empty SOLUTION)
 
-; (run-2-circles SOLUTION)
+(defn distances [v item] (let [vec (map #(distance % item) v)]
+                           (.indexOf vec (apply min vec))
+                          ))
 
-; (run-3-circles SOLUTION)
+(defn k-means [k v] (
+                    (fn fnc [klusters]
+                        (let [vn (into [] (vals (group-by #(distances klusters %) v)))]
+                             (let [kn (map #(apply vector [(/ (first (into [] (apply map + %))) 
+                                               (count %))
+                                             (/ (second (into [] (apply map + %)))
+                                               (count %))]) vn)]
+                               (if(not= (into #{} kn) (into #{} klusters)) (fnc kn) vn)))) (apply vector (take k v))))
+
+ (run-empty (partial k-means 3))
+
+; (run-2-circles (partial k-means 2))
+
+; (run-3-circles (partial k-means 3))
 
 ;;; Manipulation: mouse click - add new point
 ;;;               space - reset simulation (remove all points or regenerate them, depenends on test)
